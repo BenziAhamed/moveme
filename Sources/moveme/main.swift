@@ -24,8 +24,6 @@ if
     print("           will center the window leaving a 10% margin around")
     exit(-1)
 }
-// adjust for rounding off error
-offsets = offsets.map { $0 == 0 ? 0.01 : $0 }
 
 extension UIElement {
     func setSize(width: CGFloat, height: CGFloat) {
