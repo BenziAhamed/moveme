@@ -4,6 +4,8 @@
 
 Move is a simple window management tool and workflow.
 
+[⤵ Download](https://github.com/BenziAhamed/moveme/releases/latest)
+
 <img width="680" alt="Screenshot 2023-02-10 at 15 28 12" src="https://user-images.githubusercontent.com/1894423/218130025-4c42433c-6b6b-4085-901f-092c283ecb63.png">
 
 ## Features
