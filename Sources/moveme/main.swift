@@ -109,6 +109,7 @@ guard let windowFrame = mainWindow.getFrame()?.invert() else {
 struct Overlap {
     let screen: NSScreen
     let overlap: Double
+    let id: Int
 }
 
 extension CGRect {
@@ -119,14 +120,29 @@ extension CGRect {
 
 // find the screen that has maximum
 // overlap with the window frame
-let bestScreen = screens.screens.map {
-    Overlap(screen: $0, overlap: $0.frame.intersection(windowFrame).area)
-}.max(by: { $0.overlap < $1.overlap })!
+let screenOverlaps = screens.screens.enumerated().map { (id, screen) in
+    Overlap(
+        screen: screen,
+        overlap: screen.frame.intersection(windowFrame).area,
+        id: id
+    )
+}
+let bestScreenOverlap = screenOverlaps.max(by: { $0.overlap < $1.overlap })!
 
 // visible frame accounts for notch in newer mac book pro models
 // visible frame accounts for dock size always
-// visible frame does not account for menu bar height
-let availableFrame = bestScreen.screen.visibleFrame
+// visible frame does not account for menu bar height if screen is not main screen
+func getAvailableFrame(_ overlap: Overlap) -> CGRect {
+    var frame = overlap.screen.visibleFrame
+    if overlap.id == 0 {
+        return frame
+    }
+    frame.size.height = frame.size.height - NSStatusBar.system.thickness
+    return frame
+}
+let availableFrame = getAvailableFrame(bestScreenOverlap)
+
+
 
 // map the offsets to screen space
 let x = availableFrame.minX + availableFrame.width * offsets[0] / 100.0
