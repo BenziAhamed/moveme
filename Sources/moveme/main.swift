@@ -37,6 +37,10 @@ extension UIElement {
     func getFrame() -> CGRect? {
         return try? self.attribute(.frame)
     }
+    
+    func isResizable() -> Bool {
+        return (try? self.attributeIsSettable(.size)) ?? false
+    }
 }
 
 extension Application {
@@ -150,11 +154,28 @@ let y = availableFrame.minY + availableFrame.height * offsets[1] / 100.0
 let width = (offsets[2] - offsets[0]) * availableFrame.width / 100.0
 let height = (offsets[3] - offsets[1]) * availableFrame.height / 100.0
 
-let newFrame = CGRect(x: x, y: y, width: width, height: height)
+var newFrame = CGRect(x: x, y: y, width: width, height: height)
+
+let resizable = mainWindow.isResizable()
+if !resizable {
+    // center the window in the new frame instead
+    let centeredFrame = CGRect(
+        x: newFrame.midX - windowFrame.width/2,
+        y: newFrame.midY - windowFrame.height/2,
+        width: windowFrame.height,
+        height: windowFrame.width
+    )
+    newFrame = centeredFrame
+}
+
+
 let newFrameForWindow = newFrame.invert()
 
 mainWindow.setPosition(x: newFrameForWindow.origin.x, y: newFrameForWindow.origin.y)
-mainWindow.setSize(width: newFrameForWindow.width, height: newFrameForWindow.height)
+if resizable {
+    mainWindow.setSize(width: newFrameForWindow.width, height: newFrameForWindow.height)
+}
+
 
 //print("available frame", availableFrame)
 //print("window frame (screen) ", windowFrame)
